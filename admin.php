@@ -2,6 +2,12 @@
 include 'admin_session.php';
 include 'db.php';
 
+// Function to validate the password
+function is_valid_password($password) {
+    // Minimum 8 characters, at least one uppercase letter, one lowercase letter, one number, and one special character
+    return preg_match('/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,}$/', $password);
+}
+
 // Handle user management actions
 if (isset($_POST['delete_user'])) {
     $user_id = $_POST['user_id'];
@@ -19,23 +25,34 @@ if (isset($_POST['delete_client'])) {
 // Handle adding new user
 if (isset($_POST['add_user'])) {
     $username = $_POST['username'];
-    $email= $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
     $role = $_POST['role'];
+    $profile_pic = $_POST['profile_pic'];
 
-    // Check if username already exists
-    $check_sql = "SELECT * FROM users WHERE username = '$username'";
-    $check_result = $conn->query($check_sql);
-
-    if ($check_result->num_rows > 0) {
-        echo "Username already exists. Please choose a different username.";
+    // Validate password
+    if (!is_valid_password($password)) {
+        echo "Password does not meet the required criteria.";
+    } elseif ($password !== $confirm_password) {
+        echo "Passwords do not match.";
     } else {
-        $sql = "INSERT INTO users (username, email, password, role) VALUES ('$username', '$email', '$password', '$role')";
-        if ($conn->query($sql) === TRUE) {
-            echo "User added successfully.";
-            echo '<script>window.setTimeout(function(){ window.location = "admin.php"; }, 2000);</script>'; // Redirect after 2 seconds
+        $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+
+        // Check if username already exists
+        $check_sql = "SELECT * FROM users WHERE username = '$username'";
+        $check_result = $conn->query($check_sql);
+
+        if ($check_result->num_rows > 0) {
+            echo "Username already exists. Please choose a different username.";
         } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
+            $sql = "INSERT INTO users (username, email, password, role, profile_pic) VALUES ('$username', '$email', '$hashed_password', '$role', '$profile_pic')";
+            if ($conn->query($sql) === TRUE) {
+                echo "User added successfully.";
+                echo '<script>window.setTimeout(function(){ window.location = "admin.php"; }, 2000);</script>'; // Redirect after 2 seconds
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
         }
     }
 }
@@ -71,16 +88,16 @@ $result_users = $conn->query($sql_users);
 $sql_clients = "SELECT id, name, phone_no, id_no FROM clients";
 $result_clients = $conn->query($sql_clients);
 
-$search_query = ""; // Initialize the variable
-
 // Fetch all clients
 $sql = "SELECT id, name, phone_no, id_no, check_in, check_out FROM clients";
 $result = $conn->query($sql);
-
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <style>
@@ -120,14 +137,26 @@ $result = $conn->query($sql);
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             background-color: white;
         }
-        section
-        {
+        section {
             background-color: white;
         }
     </style>
+    <script>
+        function togglePasswordVisibility() {
+            var password = document.getElementById("password");
+            var confirmPassword = document.getElementById("confirm_password");
+            if (password.type === "password") {
+                password.type = "text";
+                confirmPassword.type = "text";
+            } else {
+                password.type = "password";
+                confirmPassword.type = "password";
+            }
+        }
+    </script>
 </head>
 <body>
-    <header class= "text-white text-center py-3">
+    <header class="text-white text-center py-3">
         <h1>KNLS E-RESOURCE MANAGEMENT SYSTEM</h1>
         <h2>Admin Panel</h2>
         <div class="action-links">
@@ -141,8 +170,6 @@ $result = $conn->query($sql);
     <section class="bg-white">
     <div class="container mt-5">
         <div class="container">
-    <div class="row">
-    <div class="container mt-5">
             <div class="row">
                 <!-- Users Table and Form -->
                 <div class="col-md-6">
@@ -194,6 +221,18 @@ $result = $conn->query($sql);
                             <div class="form-group">
                                 <label for="password">Password:</label>
                                 <input type="password" class="form-control" id="password" name="password" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm_password">Confirm Password:</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            </div>
+                            <div class="form-group form-check">
+                                <input type="checkbox" class="form-check-input" id="show_password" onclick="togglePasswordVisibility()">
+                                <label class="form-check-label" for="show_password">Show Password</label>
+                            </div>
+                            <div class="form-group">
+                                <label for="profile_pic">Profile Picture:</label>
+                                <input type="file" id="profile_pic" name="profile_pic" class="form-control">
                             </div>
                             <div class="form-group">
                                 <label for="role">Role:</label>
@@ -269,12 +308,13 @@ $result = $conn->query($sql);
                 <a href="admin_logout.php" class="btn btn-danger">Logout</a>
             </div>
         </div>
+    </div>
 </section>
- <footer>
-     <p>&copy; <?php echo date("Y"); ?>
- </footer>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<footer>
+    <p>&copy; <?php echo date("Y"); ?></p>
+</footer>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

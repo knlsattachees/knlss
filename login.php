@@ -20,7 +20,10 @@ if (isset($_POST['login'])) {
             // Store data in session variables
             $_SESSION['loggedin'] = true;
             $_SESSION['username'] = $username;
-            $_SESSION['role'] = $row['role']; // Store user role in session
+            $_SESSION['role'] = $row['role'];
+            $_SESSION['profile_pic'] = $row['profile_pic'];
+            header("Location: index.php");
+            // Store user role in session
 
             // Redirect user based on role
             if ($_SESSION['role'] == 'admin') {
@@ -41,6 +44,8 @@ if (isset($_POST['login'])) {
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="styles.css">

@@ -6,12 +6,21 @@ if (isset($_POST['register'])) {
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
     $role = $_POST['role'];
 
+    $profile_pic = '';
+    if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0) {
+        $target_dir = "uploads/";
+        $target_file = $target_dir . basename($_FILES['profile_pic']['name']);
+        if (move_uploaded_file($_FILES['profile_pic']['tmp_name'], $target_file)) {
+            $profile_pic = $target_file;
+        }
+    }
+
     // Check if the username already exists
     $check_sql = "SELECT * FROM users WHERE username = '$username'";
     $check_result = $conn->query($check_sql);
 
     if ($check_result->num_rows == 0) {
-        $sql = "INSERT INTO users (username, password, role) VALUES ('$username', '$password', '$role')";
+        $sql = "INSERT INTO users (username, password, role, profile_pic) VALUES ('$username', '$password', '$role' $profile_pic)";
         if ($conn->query($sql) === TRUE) {
             echo "Registration successful. <a href='login.php'>Login here</a>";
             // Redirect to login.php after a short delay
@@ -78,6 +87,8 @@ if (isset($_POST['register'])) {
         <input type="password" id="password" name="password" required>
         <label for="role">Role:</label>
         <select id="role" name="role" required>
+        <label for="profile_pic">Profile Picture:</label>
+        <input type="file" id="profile_pic" name="profile_pic" required>
             <option value="user">User</option>
             <option value="admin">Admin</option>
         </select>
