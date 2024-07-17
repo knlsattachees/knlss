@@ -109,17 +109,14 @@ input, select {
 body {
     font-family: Arial, sans-serif;
     height: 950;
-    width: 1910;
 }
 section
 {
     height: 710px;
-    width: 1910;
 }
 footer
 {
     height: 110px;
-    width: 1910;
     background-color: #F48312;
 }
 form {
@@ -148,7 +145,6 @@ button {
 }
 header{
     height: 100px;
-    width: 1910px;
     background-color: #2D2C8E;
 }
 h1, h2, h3 {

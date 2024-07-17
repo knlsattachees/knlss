@@ -103,19 +103,30 @@
         <p>We would like to thank the following individuals for their contributions to the development of this website:</p>
         <ul>
             <li>Paul Omondi - +254 758882563</li>
-            <li>Celestino - +254 7</li>
-            <li>Gift Simiyu - +254 723 456789</li>
+            <li>Celestino Otieno - +254 714019736</li>
+            <li>Gift Simiyu - +254 716702450</li>
             <li>Kennedy Kiprotich - +254 714262934</li>
             <li>Bencarson Marikio - +254 741137020</li>
-            <li>Stephen - +254 75</li>
+            <li>Stephen - +254 703373810</li>
+            <li>Stanley - +254 792884356</li>
+            <li>Alloycious Kimobo - +254 723254445</li>
+            <li>Emmanuel Ngetich - +254 798137697</li>
+            <li>Brian Victor - +254 798644485</li>
+            <li>Edward wechuli - +254 768101943</li>
+            <li>Winner Mugo - +254 740468758</li>
         </ul>
 
         <hr>
+        <div>
+            <a href="index.php" class="btn btn-primary">Home</a>
+       </div>
+
 
         <!-- Watermark -->
         <div class="watermark">
             Developed by KNLS Attachés @ May-August 2024
         </div>
+       
     </div>
 
     <!-- Bootstrap JS and dependencies -->
