@@ -25,7 +25,7 @@ if (isset($_POST['register_client'])) {
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
-    header("Location: index.php");
+    header("Location: dashboard.php");
     exit();
 }
 ?>

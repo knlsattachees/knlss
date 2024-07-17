@@ -114,12 +114,11 @@
             <li>Brian Victor - +254 798644485</li>
             <li>Edward wechuli - +254 768101943</li>
             <li>Winner Mugo - +254 740468758</li>
-            <li>Emmanuel Kirui - +254 721860636</li>
         </ul>
 
         <hr>
         <div>
-            <a href="index.php" class="btn btn-primary">Home</a>
+            <a href="dashboard.php" class="btn btn-primary">Home</a>
        </div>
 
 

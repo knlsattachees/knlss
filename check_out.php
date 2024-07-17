@@ -16,7 +16,7 @@ if (isset($_POST['check_out'])) {
     if ($conn->query($sql) === TRUE) {
         echo "Client checked out successfully";
         // Redirect to index.php after a short delay
-        echo '<script>window.setTimeout(function(){ window.location = "index.php"; }, 2000);</script>';
+        echo '<script>window.setTimeout(function(){ window.location = "dashboard.php"; }, 2000);</script>';
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }

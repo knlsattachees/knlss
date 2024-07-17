@@ -17,8 +17,8 @@ if (isset($_POST['check_in'])) {
     $sql = "INSERT INTO check_ins (name, check_in_time) VALUES ('$name', NOW())";
     if ($conn->query($sql) === TRUE) {
         echo "Client checked in successfully";
-        // Redirect to index.php after a short delay
-        echo '<script>window.setTimeout(function(){ window.location = "index.php"; }, 2000);</script>';
+        // Redirect to dashboard.php after a short delay
+        echo '<script>window.setTimeout(function(){ window.location = "dashboard.php"; }, 2000);</script>';
     } else {
         echo "Error: " . $sql . "<br>" . $conn->error;
     }
