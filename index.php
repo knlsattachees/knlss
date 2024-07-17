@@ -1,4 +1,3 @@
-<div class="wrapper">
 <?php
 session_start();
 include 'db.php';
@@ -8,11 +7,14 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: login.php');
     exit;
 }
+
 $search_query = ""; // Initialize the variable
 
-// Fetch all clients
+// Fetch all clients using prepared statement
 $sql = "SELECT id, name, phone_no, id_no, check_in, check_out FROM clients";
-$result = $conn->query($sql);
+$stmt = $conn->prepare($sql);
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html>
@@ -23,7 +25,7 @@ $result = $conn->query($sql);
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-        .sec_img {
+                   .sec_img {
             min-height: 711px;
             width: 100%;
             background-image: url(images/DSC_3970-scaled.jpg);
@@ -75,7 +77,7 @@ $result = $conn->query($sql);
         {
             max-height: 400px;
             overflow-y: auto;
-        }
+        }    /* Your existing styles */
     </style>
 </head>
 <body>
@@ -83,9 +85,9 @@ $result = $conn->query($sql);
         <h1>KNLS E-RESOURCE MANAGEMENT SYSTEM</h1>
         <div class="d-flex justify-content-center flex-wrap">
             <a href="register_client.php" class="btn btn-light mx-2 my-1">Register Client</a>
-            <a href="check_in_merged.php" class="btn btn-light mx-2 my-1">Check In</a> <!-- New Link -->
+            <a href="check_in_merged.php" class="btn btn-light mx-2 my-1">Check In</a>
             <a href="check_out_merged.php" class="btn btn-light mx-2 my-1">Check Out</a>
-        </div> 
+            <a href="about.php" class="btn btn-light mx-2 my-1">About us</a>
         </div>
     </header>
     <section class="sec_img">
@@ -112,23 +114,22 @@ $result = $conn->query($sql);
                     </thead>
                     <tbody>
                         <?php
-                        if ($result->num_rows > 0) {
-                            while ($row = $result->fetch_assoc()) {
-                                echo "<tr>
-                                        <td>{$row['id']}</td>
-                                        <td>{$row['name']}</td>
-                                        <td>{$row['phone_no']}</td>
-                                        <td>{$row['id_no']}</td>
-                                        <td>{$row['check_in']}</td>
-                                        <td>{$row['check_out']}</td>
-                                      </tr>";
-                            }
-                        } else {
-                            echo "<tr><td colspan='6' class='text-center'>No clients registered yet.</td></tr>";
+                        while ($row = $result->fetch_assoc()) {
+                            echo "<tr>
+                                    <td>" . htmlspecialchars($row['id']) . "</td>
+                                    <td>" . htmlspecialchars($row['name']) . "</td>
+                                    <td>" . htmlspecialchars($row['phone_no']) . "</td>
+                                    <td>" . htmlspecialchars($row['id_no']) . "</td>
+                                    <td>" . htmlspecialchars($row['check_in']) . "</td>
+                                    <td>" . htmlspecialchars($row['check_out']) . "</td>
+                                  </tr>";
                         }
                         ?>
                     </tbody>
                 </table>
+                <?php if ($result->num_rows === 0): ?>
+                    <p class="text-center">No clients registered yet.</p>
+                <?php endif; ?>
             </div>
             <div class="mt-3">
                 <a href="logout.php" class="btn btn-danger">Logout</a>
@@ -142,11 +143,12 @@ $result = $conn->query($sql);
             <a href="mailto:knls@knls.ac.ke" class="fa fa-google"></a>
             <a href="https://www.instagram.com/knlsmedia/" class="fa fa-instagram"></a>
         </div>
-        <p>&copy; <?php echo date("Y"); ?> KNLSATTACHEES</p>
+        <p>&copy; <?php echo date("Y"); ?>
+            Developed by KNLS Attachés @ May-August 2024
+        </p>
     </footer>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>
-</div>

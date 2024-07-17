@@ -2,28 +2,34 @@
 session_start();
 include 'db.php';
 
-if (isset($_POST['login'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
 
+    // Validate inputs to prevent SQL injection
+    $username = mysqli_real_escape_string($conn, $username);
+
     // Query to fetch user details based on username
-    $sql = "SELECT * FROM users WHERE username = '$username'";
-    $result = $conn->query($sql);
+    $sql = "SELECT * FROM users WHERE username = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows == 1) {
         $row = $result->fetch_assoc();
         // Verify hashed password
         if (password_verify($password, $row['password'])) {
-            // Password is correct, start a new session
-            session_start();
+            // Password is correct, start a new session if not already started
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
 
             // Store data in session variables
             $_SESSION['loggedin'] = true;
             $_SESSION['username'] = $username;
             $_SESSION['role'] = $row['role'];
             $_SESSION['profile_pic'] = $row['profile_pic'];
-            header("Location: index.php");
-            // Store user role in session
 
             // Redirect user based on role
             if ($_SESSION['role'] == 'admin') {
@@ -38,8 +44,13 @@ if (isset($_POST['login'])) {
     } else {
         echo "Username not found.";
     }
+
+    // Close statement and connection
+    $stmt->close();
+    $conn->close();
 }
 ?>
+
 <link rel="stylesheet" type="text/css" href="styles.css">
 <!DOCTYPE html>
 <html>
